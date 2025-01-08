@@ -1,14 +1,30 @@
-from auto_poll import main
-from fastapi import FastAPI
+from flask import Flask, request
+from telegram import Update, Bot
+from telegram.ext import Dispatcher, CommandHandler, CallbackContext, Updater
+import schedule
+import time
+import threading
 
-app = FastAPI()
+from auto_poll import start, add_poll, TELEGRAM_BOT_TOKEN
 
+app = Flask(__name__)
+bot = Bot(token=TELEGRAM_BOT_TOKEN)
+dispatcher = Dispatcher(bot, None, workers=0)
 
-@app.get("/")
-async def read_root():
-    return {"message": "Hello World"}
+dispatcher.add_handler(CommandHandler("start", start))
+dispatcher.add_handler(CommandHandler("add", add_poll))
 
-@app.get("/start")
-async def start():
-    main()
-    return {"message": "Poll bot started"}
+@app.route('/webhook', methods=['POST'])
+def webhook():
+    update = Update.de_json(request.get_json(force=True), bot)
+    dispatcher.process_update(update)
+    return 'ok'
+
+def run_schedule():
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
+if __name__ == '__main__':
+    threading.Thread(target=run_schedule).start()
+    app.run(port=5000)
