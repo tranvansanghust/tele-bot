@@ -73,9 +73,11 @@ def main():
     dp.add_handler(CommandHandler("add", add_poll))
 
     updater.start_polling()
+    updater.idle()
 
-    print("Tele bot started")
     while True:
         schedule.run_pending()
         time.sleep(1)
 
+if __name__ == '__main__':
+    main()
