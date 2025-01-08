@@ -20,6 +20,10 @@ def webhook():
     dispatcher.process_update(update)
     return 'ok'
 
+@app.route('/')
+def index():
+    return 'Hello, World!'
+
 def run_schedule():
     while True:
         schedule.run_pending()
