@@ -1,5 +1,4 @@
-
-fastapi
+Flask==2.0.1
 uvicorn
 python-telegram-bot==13.7
 schedule==1.1.0
